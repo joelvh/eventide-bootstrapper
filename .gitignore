@@ -1,0 +1,10 @@
+/.bundle
+/Gemfile.lock
+/*.gem
+/gems
+/settings
+/tmp
+/test/package/installed
+.DS_store
+.archive
+.idea
