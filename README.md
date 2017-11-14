@@ -1,6 +1,12 @@
 
 # Getting Started with Eventide
 
+## Philosophy
+
+* Avoid overriding methods like the plague for the most part - that, and the use of `super`
+* If we end up with something that requires comments to be clear, we re-write it until it’s clear
+* About maintaining multiple gems in one repository: We keep things that are separate, separate. It’s the laws of software physics that dictate the structure, rather than developer convenience, etc
+
 ## Project Structure
 
 TODO
