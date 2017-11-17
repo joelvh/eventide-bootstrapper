@@ -14,6 +14,19 @@ TODO
 * Package each component into it's own gem
     * Create a "client"
 
+### Basics
+
+Classes and modules are setup with some helper methods to build objects. Maybe this can be compared to the DSL people become used to when defining schemas with an ORM, but really they're helpers to setup and configure accessors and object instances.
+
+    class SomeModel
+      require 'attribute'
+
+      # Define an accessor called `email` with a default value of "unknown@unknown.com".
+      # (Alternatively, you can create a `:reader` or `:writer` instead.)
+      Attribute::Define.(self, :email, :accessor){ 'unknown@unknown.com' }
+
+
+
 ### Initialization
 
 * Consumer can be "started" to run: https://github.com/eventide-project/consumer-postgres
