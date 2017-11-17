@@ -10,17 +10,16 @@ class Bootstrapper
   SETTINGS_PATH = 'settings/message_store_postgres.json'.freeze
 
   def self.run(component_name, project_root, &start_proc)
-    bootstrapper = new(start_proc, component_name: component_name, project_root: project_root)
+    bootstrapper = new(start_proc, project_root: project_root)
 
     ComponentHost.start(component_name) do |host|
       host.register(bootstrapper)
     end
   end
 
-  def initialize(start_proc, component_name: nil, project_root: nil)
-    @start_proc     = start_proc
-    @component_name = component_name
-    @root           = project_root
+  def initialize(start_proc, project_root: nil)
+    @start_proc   = start_proc
+    @project_root = project_root
   end
 
   def call(*args, **keyword_args)
@@ -29,7 +28,7 @@ class Bootstrapper
   end
 
   def write_settings(hash = parse_database_url, overwrite: false)
-    file_path = File.join(@root, SETTINGS_PATH)
+    file_path = File.join(@project_root, SETTINGS_PATH)
 
     return if File.exist?(file_path) && !overwrite
 
