@@ -14,12 +14,14 @@ require_relative 'lib/consumers/commands'
 
 # bootstrap here
 
-Dotenv.load!('.env')
+Dotenv.load!('.env') unless ENV['EVENTIDE_ENV'] == 'production'
 
-Bootstrapper.run('account-component') do
-  binding.pry
-  Consumers::Commands.start('account:command', session: session)
-  #Consumers::Commands::Transactions.start('accountTransaction', session: session)
-  #Consumers::Events.start('account', session: session)
+Bootstrapper.run('account-component', __dir__) do
+  write_settings(overwrite: true)
+  # binding.pry
+  # Consumers::Commands.start('account:command', session: session)
+  # Consumers::Commands::Transactions.start('accountTransaction', session: session)
+  # Consumers::Events.start('account', session: session)
 
+  Consumers::Commands.start('account:command')
 end

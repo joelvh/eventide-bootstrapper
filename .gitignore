@@ -8,3 +8,4 @@
 .DS_store
 .archive
 .idea
+.env
