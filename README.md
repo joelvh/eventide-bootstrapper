@@ -3,6 +3,8 @@
 
 ## Philosophy
 
+**You need a foundation in distributed systems to use Eventide and be successful.**
+
 * Avoid overriding methods like the plague for the most part - that, and the use of `super`
 * If we end up with something that requires comments to be clear, we re-write it until it’s clear
 * About maintaining multiple gems in one repository: We keep things that are separate, separate. It’s the laws of software physics that dictate the structure, rather than developer convenience, etc
@@ -14,7 +16,26 @@ TODO
 * Package each component into it's own gem
     * Create a "client"
 
-### Basics
+### Architecture
+
+Notes on how to organize concerns in the lifecycle of an application
+
+* Command Client - front-end (e.g. Rails)
+  * Command Objects
+    * Event Messages
+* Domain Service: Eventide (e.g. Component Host)
+  * Components
+    * Command Messages
+      * Event Messages
+* View Data Service
+  * Components
+    * Command Messages
+      * Event Messages
+* Query Client - front-end (e.g. Rails)
+  * Query Objects
+  * Event Messages
+
+### Usage
 
 Classes and modules are setup with some helper methods to build objects. Maybe this can be compared to the DSL people become used to when defining schemas with an ORM, but really they're helpers to setup and configure accessors and object instances.
 
@@ -30,102 +51,102 @@ Classes and modules are setup with some helper methods to build objects. Maybe t
 ### Initialization
 
 * Consumer can be "started" to run: https://github.com/eventide-project/consumer-postgres
-    * Example of starting various consumers: https://github.com/eventide-examples/account-component/blob/master/lib/account_component/start.rb
-    * Component Host is recommended to run Consumer in production: https://github.com/eventide-project/component-host
+  * Example of starting various consumers: https://github.com/eventide-examples/account-component/blob/master/lib/account_component/start.rb
+  * Component Host is recommended to run Consumer in production: https://github.com/eventide-project/component-host
 
 
 
 Tracing application loading:
 
 * eventide-postgres:
-    * entity_store
-        * entity_cache
-            * configure
-                * ostruct
-                * configure/macro
-                * configure/activate
-            * `Configure.activate`
-                * Extends `Object` with `Configure::Macro` and `default_factory_method` is `nil` (but will then default to `:build` in getter)
-                    * Adds `configure` (aliased from `configure_macro`) class and instance method
-                        * TODO: Determine what this does
-            * message_store
-                * pp
-                * json
-                * casing
-                * identifier/uuid
-                * schema
-                * initializer
-                    * attribute
-                        * attribute/define
-                    * initializer/parameter
-                    * initializer/generator
-                    * initializer/visibility
-                    * initializer/macro
-                    * initializer/activate
-                * `Initializer.activate`
-                    * Extends `Object` with `Initializer::Macro`
-                        * Adds `initializer` (aliased from `initializer_macro`) class and instance method
-                * transform
-                    * log
-                    * transform/log
-                    * transform/transform
-                    * transform/write
-                    * transform/read
-                    * transform/copy
-                * virtual
-                    * virtual/method
-                    * virtual/pure_method
-                    * virtual/macro
-                    * virtual/activate
-                * `Virtual.activate`
-                    * Extends `Object` with `Virtual::Macro`
-                        * Adds `virtual` (aliased from `virtual_macro`) class method - seems to simply define a method
-                        * Adds `pure_virtual` (aliased from `pure_macro`) class method
-                        * Adds `abstract` (aliased from `pure_macro`) class method
-                * async_invocation
-                    * async_invocation/incorrect
-                * _TODO: finish listing_
-            * settings
-                * pathname
-                * json
-                * log
-                * casing
-                * attribute
-                * dependency
-                    * subst_attr
-                        * naught
-                        * attribute
-                        * subst_attr/substitute
-                        * subst_attr/attribute
-                        * subst_attr/macro
-                        * subst_attr/activate
-                    * dependency/macro
-                    * dependency/activate
-                * `Dependency.activate`
-                    * Extends `Object` with `Dependency::Macro`
-                        * Adds `dependency` (aliased from `dependency_macro`) class method - seems to define a method that returns a `SubstAttr::Substitute`, which can be a `NullObject` that swallows "undefined method" errors??
-            * telemetry
-            * entity_cache/log
-            * entity_cache/defaults
-            * entity_cache/record
-            * entity_cache/record/destructure
-            * entity_cache/record/log_text
-            * entity_cache/record/transformer
-            * entity_cache/store/internal
-            * entity_cache/store/internal/build
-            * entity_cache/store/internal/build/defaults
-            * entity_cache/store/internal/scope/exclusive
-            * entity_cache/store/internal/scope/global
-            * entity_cache/store/internal/scope/thread
-            * entity_cache/store/internal/substitute
-            * entity_cache/entity_cache
-            * entity_cache/substitute
-        * entity_projection
-        * entity_store/log
-        * entity_store/entity_store
-        * entity_store/substitute
-    * consumer/postgres
-    * entity_snapshot/postgres
+  * entity_store
+    * entity_cache
+      * configure
+        * ostruct
+        * configure/macro
+        * configure/activate
+      * `Configure.activate`
+        * Extends `Object` with `Configure::Macro` and `default_factory_method` is `nil` (but will then default to `:build` in getter)
+          * Adds `configure` (aliased from `configure_macro`) class and instance method
+            * TODO: Determine what this does
+      * message_store
+        * pp
+        * json
+        * casing
+        * identifier/uuid
+        * schema
+        * initializer
+          * attribute
+            * attribute/define
+          * initializer/parameter
+          * initializer/generator
+          * initializer/visibility
+          * initializer/macro
+          * initializer/activate
+        * `Initializer.activate`
+          * Extends `Object` with `Initializer::Macro`
+            * Adds `initializer` (aliased from `initializer_macro`) class and instance method
+        * transform
+          * log
+          * transform/log
+          * transform/transform
+          * transform/write
+          * transform/read
+          * transform/copy
+        * virtual
+          * virtual/method
+          * virtual/pure_method
+          * virtual/macro
+          * virtual/activate
+        * `Virtual.activate`
+          * Extends `Object` with `Virtual::Macro`
+            * Adds `virtual` (aliased from `virtual_macro`) class method - seems to simply define a method
+            * Adds `pure_virtual` (aliased from `pure_macro`) class method
+            * Adds `abstract` (aliased from `pure_macro`) class method
+        * async_invocation
+          * async_invocation/incorrect
+        * _TODO: finish listing_
+      * settings
+        * pathname
+        * json
+        * log
+        * casing
+        * attribute
+        * dependency
+          * subst_attr
+            * naught
+            * attribute
+            * subst_attr/substitute
+            * subst_attr/attribute
+            * subst_attr/macro
+            * subst_attr/activate
+          * dependency/macro
+          * dependency/activate
+        * `Dependency.activate`
+          * Extends `Object` with `Dependency::Macro`
+            * Adds `dependency` (aliased from `dependency_macro`) class method - seems to define a method that returns a `SubstAttr::Substitute`, which can be a `NullObject` that swallows "undefined method" errors??
+      * telemetry
+      * entity_cache/log
+      * entity_cache/defaults
+      * entity_cache/record
+      * entity_cache/record/destructure
+      * entity_cache/record/log_text
+      * entity_cache/record/transformer
+      * entity_cache/store/internal
+      * entity_cache/store/internal/build
+      * entity_cache/store/internal/build/defaults
+      * entity_cache/store/internal/scope/exclusive
+      * entity_cache/store/internal/scope/global
+      * entity_cache/store/internal/scope/thread
+      * entity_cache/store/internal/substitute
+      * entity_cache/entity_cache
+      * entity_cache/substitute
+    * entity_projection
+    * entity_store/log
+    * entity_store/entity_store
+    * entity_store/substitute
+  * consumer/postgres
+  * entity_snapshot/postgres
 
 ## Setup Message Store (Postgres)
 
@@ -159,21 +180,21 @@ Alternatively, there's a [workshop tutorial](https://github.com/eventide-tutoria
 ## Environment Variables
 
 * `eventide-postgres`
-    * Scripts:
-        * `POSTURE`
+  * Scripts:
+    * `POSTURE`
 * `messaging-postgres`
-    * Tests:
-        * `LOG_TAGS`
-        * `PERIOD`
+  * Tests:
+    * `LOG_TAGS`
+    * `PERIOD`
 * `message-store-postgres`
-    * Scripts:
-        * `DATABASE_USER`
-        * `DATABASE_NAME`
-        * `TABLE_NAME`
-        * `STREAM_NAME`
-    * Tests:
-        * `CONSOLE_DEVICE`
-        * `LOG_LEVEL`
+  * Scripts:
+    * `DATABASE_USER`
+    * `DATABASE_NAME`
+    * `TABLE_NAME`
+    * `STREAM_NAME`
+  * Tests:
+    * `CONSOLE_DEVICE`
+    * `LOG_LEVEL`
     * `LIBRARIES_HOME`
 
 ## Server Configuration
@@ -184,75 +205,102 @@ TODO: How to configure database connection using environment variables
 
 # Reference
 
+Eventide Materials:
+
+* Examples:
+  * Quickstart - https://github.com/eventide-examples/quickstart
+  * Account Component - https://github.com/eventide-examples/account-component
+  * Funds Transfer Component - https://github.com/eventide-examples/funds-transfer-component
+  * Todo w/ Rails front-end - https://github.com/ntl/todo
+* Workshops:
+  * Workshop Script - https://docs.google.com/document/d/1vr-8bypzGzbQj-lg8DveVjhZJa7Wi47brTNxqsGKGVY/edit
+  * Workshop - https://github.com/eventide-tutorial/workshop
+  * Workshop (Account Component) - https://github.com/eventide-tutorial/account-component
+* Media:
+  * Monoliths vs. Microservices Part IV - http://www.vancouvertechpodcast.ca/episodes/1d330016/episode-86-monoliths-vs-microservices-part-iv
+  * Arkency Interview w/ Scott Bellware - https://blog.arkency.com/soa-microservices-ruby-eventide-scott-bellware-interview/
+  * Media (Scott Bellware & Nathan Ladd) - https://ampgt.com/media/
+
+Fundamental education:
+
+* Microservice Prerequisites - https://martinfowler.com/bliki/MicroservicePrerequisites.html
+* GOTO 2014: Microservices (Martin Fowler) - https://www.youtube.com/watch?v=wgdBVIX9ifA&t=0m1s
+* GTAC 2007: Ed Keyes - Sufficiently Advanced Monitoring is Indistinguishable from Testing: https://www.youtube.com/watch?v=uSo8i1N18oc
+* The Dark Side of Event Sourcing - http://files.movereem.nl/2017saner-eventsourcing.pdf
+* Is a CQRS Command = to a GoF Command - http://danielwhittaker.me/2015/05/25/is-a-cqrs-command-gof-command/
+* Event-Driven Architecture - https://herbertograca.com/2017/10/05/event-driven-architecture/
+
+Concepts and Features:
+
 * [Design Values](https://eventide-project.org/design-values)
-    * General Design Values
-        * [Useful Objects](https://eventide-project.org/useful-objects)
-            * [Doctrine of Useful Objects](https://github.com/sbellware/useful-objects/blob/master/README.md)
-        * Controllable
-        * _"Push, rather than pull"_
-        * Behavioral objects
-        * Limited data object interfaces
-        * Explicit dependencies
-        * Substitutes
-        * Telemetry
-        * Logging
-        * Composition
-        * Limited primitive initialization
-        * Class constructors
-        * Protocol discovery
-        * Strict regulation of monkey-patching
-        * Controls
-    * Service Design Values
-        * Commands and Events
-        * Autonomy
-        * No queries
-        * Dumb pipes, smart endpoints
-        * Architecture, not infrastructure
-        * Projection side effects
-        * Entities are data structures
-        * Immutability of messages
-        * Components
+  * General Design Values
+    * [Useful Objects](https://eventide-project.org/useful-objects)
+      * [Doctrine of Useful Objects](https://github.com/sbellware/useful-objects/blob/master/README.md)
+    * Controllable
+    * _"Push, rather than pull"_
+    * Behavioral objects
+    * Limited data object interfaces
+    * Explicit dependencies
+    * Substitutes
+    * Telemetry
+    * Logging
+    * Composition
+    * Limited primitive initialization
+    * Class constructors
+    * Protocol discovery
+    * Strict regulation of monkey-patching
+    * Controls
+  * Service Design Values
+    * Commands and Events
+    * Autonomy
+    * No queries
+    * Dumb pipes, smart endpoints
+    * Architecture, not infrastructure
+    * Projection side effects
+    * Entities are data structures
+    * Immutability of messages
+    * Components
 * Concepts & Terminology
-    * [Introductory Examples](https://eventide-project.org/intro)
-        * Handlers
-        * Commands
-        * Events
-        * Entities
-        * Stores
-        * Projections
-    * [Features](https://eventide-project.org/#features-section)
-        * Message Store
-        * Messaging
-        * Entity Projection
-        * Entity Store
-        * Entity Cache
-        * Entity Snapshot
-        * Consumer
-        * Component Host
-        * _Other Features_
-    * [Libraries](https://eventide-project.org/libraries)
-        * Top-level libraries
-            * [eventide-postgres](https://github.com/eventide-project/eventide-postgres) - Event-Oriented Autonomous Services Toolkit for _Postgres_
-            * [eventide-event_store](https://github.com/eventide-project/eventide-event-store) - Event-Oriented Autonomous Services Toolkit for _Event Store_
-        * Core libraries
-            * [message_store](https://github.com/eventide-project/message-store) - Common primitives for platform-specific message store implementations
-            * [messaging](https://github.com/eventide-project/messaging) - Common primitives for platform-specific messaging implementations for Eventide
-            * [entity_projection](https://github.com/eventide-project/entity-projection) - Projects event data into an entity
-            * [entity_store](https://github.com/eventide-project/entity-store) - Store of entities that are projected from streams
-            * [entity_cache](https://github.com/eventide-project/entity-cache) - Cache of entities retrieved by an entity-store, with in-memory temporary and on-disk permanent storage options
-            * [consumer](https://github.com/eventide-project/consumer) - Consumer library that maintains a long running subscription to an event stream
-            * [component_host](https://github.com/eventide-project/component-host) - Host components inside a single physical process
-            * [view_data-commands](https://github.com/eventide-project/view-data-commands) - Message schemas for data-oriented command streams used to populate view databases
-        * Postgres libraries
-            * [message_store-postgres](https://github.com/eventide-project/message-store-postgres) - Message store implementation for PostgreSQL
-            * [messaging-postgres](https://github.com/eventide-project/messaging-postgres) - Eventide messaging for Postgres
-            * [entity_snapshot-postgres](https://github.com/eventide-project/entity-snapshot-postgres) - Projected entity snapshotting for Postgres
-            * [consumer-postgres](https://github.com/eventide-project/consumer-postgres) - Category and stream consumer for Postgres
-            * [view_data-pg](https://github.com/eventide-project/view-data-pg) - Populate Postgres view databases from event streams
-            * [command_line-component_generator](https://github.com/eventide-project/command-line-component-generator) - Command line project generator
-        * Event Store libraries
-        * Utility libraries
-        * Third-party libraries
+  * [Introductory Examples](https://eventide-project.org/intro)
+    * Handlers
+    * Commands
+    * Events
+    * Entities
+    * Stores
+    * Projections
+  * [Features](https://eventide-project.org/#features-section)
+    * Message Store
+    * Messaging
+    * Entity Projection
+    * Entity Store
+    * Entity Cache
+    * Entity Snapshot
+    * Consumer
+    * Component Host
+    * _Other Features_
+  * [Libraries](https://eventide-project.org/libraries)
+    * Top-level libraries
+      * [eventide-postgres](https://github.com/eventide-project/eventide-postgres) - Event-Oriented Autonomous Services Toolkit for _Postgres_
+      * [eventide-event_store](https://github.com/eventide-project/eventide-event-store) - Event-Oriented Autonomous Services Toolkit for _Event Store_
+    * Core libraries
+      * [message_store](https://github.com/eventide-project/message-store) - Common primitives for platform-specific message store implementations
+      * [messaging](https://github.com/eventide-project/messaging) - Common primitives for platform-specific messaging implementations for Eventide
+      * [entity_projection](https://github.com/eventide-project/entity-projection) - Projects event data into an entity
+      * [entity_store](https://github.com/eventide-project/entity-store) - Store of entities that are projected from streams
+      * [entity_cache](https://github.com/eventide-project/entity-cache) - Cache of entities retrieved by an entity-store, with in-memory temporary and on-disk permanent storage options
+      * [consumer](https://github.com/eventide-project/consumer) - Consumer library that maintains a long running subscription to an event stream
+      * [component_host](https://github.com/eventide-project/component-host) - Host components inside a single physical process
+      * [view_data-commands](https://github.com/eventide-project/view-data-commands) - Message schemas for data-oriented command streams used to populate view databases
+    * Postgres libraries
+      * [message_store-postgres](https://github.com/eventide-project/message-store-postgres) - Message store implementation for PostgreSQL
+      * [messaging-postgres](https://github.com/eventide-project/messaging-postgres) - Eventide messaging for Postgres
+      * [entity_snapshot-postgres](https://github.com/eventide-project/entity-snapshot-postgres) - Projected entity snapshotting for Postgres
+      * [consumer-postgres](https://github.com/eventide-project/consumer-postgres) - Category and stream consumer for Postgres
+      * [view_data-pg](https://github.com/eventide-project/view-data-pg) - Populate Postgres view databases from event streams
+      * [command_line-component_generator](https://github.com/eventide-project/command-line-component-generator) - Command line project generator
+    * Event Store libraries
+    * Utility libraries
+    * Third-party libraries
 
 ## Dependency Graph
 
